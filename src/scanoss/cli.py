@@ -24,9 +24,11 @@
 import argparse
 import os
 import sys
+from array import array
 
 import pypac
 
+from .threadeddependencies import SCOPE
 from .scanner import Scanner
 from .scancodedeps import ScancodeDeps
 from .scantype import ScanType
@@ -100,6 +102,7 @@ def setup_args() -> None:
                         help='Scancode command and path if required (optional - default scancode).')
     p_scan.add_argument('--sc-timeout', type=int, default=600,
                         help='Timeout (in seconds) for scancode to complete (optional - default 600)')
+    p_scan.add_argument('--dep-scope', '-ds', type=SCOPE, help='Filter dependencies by scope - default all (options: dev/prod)')
 
     # Sub-command: fingerprint
     p_wfp = subparsers.add_parser('fingerprint', aliases=['fp', 'wfp'],
@@ -531,6 +534,7 @@ def scan(parser, args):
         print_stderr(f'Error: Certificate file does not exist: {args.ca_cert}.')
         exit(1)
     pac_file = get_pac_file(args.pac)
+
     scan_options = get_scan_options(args)   # Figure out what scanning options we have
 
     scanner = Scanner(debug=args.debug, trace=args.trace, quiet=args.quiet, api_key=args.key, url=args.apiurl,
@@ -565,10 +569,10 @@ def scan(parser, args):
             print_stderr(f'Error: File or folder specified does not exist: {args.scan_dir}.')
             exit(1)
         if os.path.isdir(args.scan_dir):
-            if not scanner.scan_folder_with_options(args.scan_dir, args.dep, scanner.winnowing.file_map):
+            if not scanner.scan_folder_with_options(args.scan_dir, args.dep, scanner.winnowing.file_map, args.dep_scope):
                 exit(1)
         elif os.path.isfile(args.scan_dir):
-            if not scanner.scan_file_with_options(args.scan_dir, args.dep, scanner.winnowing.file_map):
+            if not scanner.scan_file_with_options(args.scan_dir, args.dep, scanner.winnowing.file_map, args.dep_scope):
                 exit(1)
         else:
             print_stderr(f'Error: Path specified is neither a file or a folder: {args.scan_dir}.')
