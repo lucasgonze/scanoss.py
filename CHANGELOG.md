@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Upcoming changes...
 
+## [1.15.0] - 2024-09-11
+### Added
+- Added support for filtering dependencies based on development or production dependency scopes
+- Added support for defining custom scopes to include or exclude dependencies with specified scope criteria
+
 ## [1.14.0] - 2024-08-09
 ### Added
 - Added support for Python3.12
